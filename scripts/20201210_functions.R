@@ -141,37 +141,70 @@ plot_pxg <- function(cross, map, tsize = 12, yaxis = "Relative animal length") {
 }
 
 # plot NIL pheno and geno with stats
-plot_nil <- function(phenodf, genodf, statdf, strains, chr, tsize = 12, ylab = "Animal length") {
+plot_nil <- function(phenodf, genodf, statdf, strains, chr, tsize = 12, ylab = "Animal length", supp = F) {
 
-    # plot phenotype
-    pheno <- phenodf %>%
-        dplyr::group_by(strain, condition) %>%
-        dplyr::mutate(phen = max(phenotype) + 0.1) %>%
-        dplyr::ungroup() %>%
-        dplyr::full_join(statdf, by = c("strain", "condition", "trait")) %>%
-        dplyr::mutate(strain = factor(strain, 
-                                      levels = rev(strains))) %>%
-        dplyr::filter(!is.na(strain),
-                      strain %in% strains) %>%
-        ggplot(.) +
-        aes(x = strain, y = phenotype, fill = strain_fill) +
-        geom_jitter(width = 0.1, size = 0.05) +
-        geom_boxplot(outlier.color = NA, alpha = 0.5, size = 0.2) +
-        ggplot2::geom_text(aes(label = sig, y = phen, color = groups), size = tsize/4, angle = -90) +
-        scale_fill_manual(values = c("N2" = "orange", "CB" = "blue", "NIL" = "grey")) +
-        scale_color_manual(values = c("N2" = "orange", "CB" = "blue")) +
-        theme_bw(tsize) +
-        theme(axis.text.x = element_text(face="bold", color="black"),
-              axis.title.x = element_text(face="bold", color="black"),
-              axis.text.y = element_blank(),
-              axis.ticks.y = element_blank(),
-              strip.text = element_text(face = "bold", color = "black"),
-              legend.position = "none",
-              panel.grid.minor = element_blank(),
-              panel.grid.major = element_blank()) +
-        coord_flip() +
-        labs(x = " ", y = ylab)  +
-        facet_grid(~condition)
+    if(supp == T) {
+        # plot phenotype
+        pheno <- phenodf %>%
+            dplyr::group_by(strain, condition) %>%
+            dplyr::mutate(phen = max(phenotype) + 0.1) %>%
+            dplyr::ungroup() %>%
+            dplyr::full_join(statdf, by = c("strain", "condition", "trait")) %>%
+            dplyr::mutate(strain = factor(strain, 
+                                          levels = rev(strains))) %>%
+            dplyr::filter(!is.na(strain),
+                          strain %in% strains) %>%
+            ggplot(.) +
+            aes(x = strain, y = phenotype, fill = strain_fill) +
+            geom_jitter(width = 0.1, size = 0.05) +
+            geom_boxplot(outlier.color = NA, alpha = 0.5, size = 0.2) +
+            ggplot2::geom_text(aes(label = sig, y = phen, color = groups), size = tsize/4, angle = -90) +
+            scale_fill_manual(values = c("N2" = "orange", "CB" = "blue", "NIL" = "grey")) +
+            scale_color_manual(values = c("N2" = "orange", "CB" = "blue")) +
+            theme_bw(tsize) +
+            theme(axis.text = element_text(face="bold", color="black"),
+                  axis.title.x = element_text(face="bold", color="black"),
+                  # axis.text.y = element_blank(),
+                  axis.ticks.y = element_blank(),
+                  strip.text = element_text(face = "bold", color = "black"),
+                  legend.position = "none",
+                  panel.grid.minor = element_blank(),
+                  panel.grid.major = element_blank()) +
+            coord_flip() +
+            labs(x = " ", y = ylab)  +
+            facet_grid(~factor(condition, levels = c("DMSO", "abamectin", "regressed-abamectin")))
+    } else {
+        # plot phenotype
+        pheno <- phenodf %>%
+            dplyr::group_by(strain, condition) %>%
+            dplyr::mutate(phen = max(phenotype) + 0.1) %>%
+            dplyr::ungroup() %>%
+            dplyr::full_join(statdf, by = c("strain", "condition", "trait")) %>%
+            dplyr::mutate(strain = factor(strain, 
+                                          levels = rev(strains))) %>%
+            dplyr::filter(!is.na(strain),
+                          strain %in% strains) %>%
+            ggplot(.) +
+            aes(x = strain, y = phenotype, fill = strain_fill) +
+            geom_jitter(width = 0.1, size = 0.05) +
+            geom_boxplot(outlier.color = NA, alpha = 0.5, size = 0.2) +
+            ggplot2::geom_text(aes(label = sig, y = phen, color = groups), size = tsize/4, angle = -90) +
+            scale_fill_manual(values = c("N2" = "orange", "CB" = "blue", "NIL" = "grey")) +
+            scale_color_manual(values = c("N2" = "orange", "CB" = "blue")) +
+            theme_bw(tsize) +
+            theme(axis.text.x = element_text(face="bold", color="black"),
+                  axis.title.x = element_text(face="bold", color="black"),
+                  axis.text.y = element_blank(),
+                  axis.ticks.y = element_blank(),
+                  strip.text = element_text(face = "bold", color = "black"),
+                  legend.position = "none",
+                  panel.grid.minor = element_blank(),
+                  panel.grid.major = element_blank()) +
+            coord_flip() +
+            labs(x = " ", y = ylab)  +
+            facet_grid(condition)
+    }
+
     
     # plot chrV genotype
     chrgeno <- genodf %>%
@@ -675,3 +708,55 @@ nil_plot <- function(strains, chr, left.cb = 0, left.n2 = 0, left.bound = 0, rig
         }
     }
 }
+
+get_stats <- function(dfregressed) {
+    statsdf <- dfregressed %>%
+        ungroup() %>%
+        dplyr::select(condition, trait) %>%
+        dplyr::distinct(condition, trait, .keep_all = T)
+    
+    #Add statistical significance to each pair of strains
+    newdf <- NULL
+    for(i in 1:nrow(statsdf)) {
+        # broom::tidy doing something weird... need to code by hand now
+        stats <- data.frame(quick_stats(df = dfregressed, trt = statsdf$trait[i], cond = statsdf$condition[i], plot = FALSE)[[1]]) %>%
+            dplyr::mutate(comparison = rownames(.)) %>%
+            dplyr::rename(adj.p.value = p.adj) %>%
+            # stats <- broom::tidy(quick_stats(df = dfregressed, trt = statsdf$trait[i], cond = statsdf$condition[i], plot = FALSE))
+            # dplyr::select(-term) %>%
+            dplyr::mutate(condition = statsdf$condition[i],
+                          trait = statsdf$trait[i]) %>%
+            dplyr::select(comparison, condition, trait, diff:adj.p.value)
+        
+        newdf <- rbind(newdf, stats)
+        
+    }
+    
+    return(newdf)
+}
+
+quick_stats <- function(df, trt, cond, plot = FALSE){
+    stat_df <- df %>%
+        dplyr::filter(trait == trt, condition==cond)%>%
+        dplyr::select(strain, phenotype)
+    
+    aov_res <- aov(stat_df$phenotype ~ stat_df$strain)
+    
+    if(plot == TRUE) {
+        summary(aov_res)
+        tuk <- TukeyHSD(aov_res)
+        psig=as.numeric(apply(tuk$`stat_df$strain`[,2:3],1,prod)>=0)+1
+        op=par(mar=c(4.2,9,3.8,2))
+        plot(tuk,col=psig,yaxt="n")
+        for (j in 1:length(psig)){
+            axis(2,at=j,labels=rownames(tuk$`stat_df$strain`)[length(psig)-j+1],
+                 las=1,cex.axis=.8,col.axis=psig[length(psig)-j+1])
+        }
+        par(op)
+    }
+    
+    pwtuk <- TukeyHSD(aov_res)
+    
+    return(pwtuk)
+}
+
