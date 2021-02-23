@@ -1,10 +1,7 @@
 # ABAMECTIN MANUSCRIPT FIGURES #
 
-###############################
-# IMPORTANT!!!!!
 # Set working directory
-setwd("~/Dropbox/AndersenLab/LabFolders/Katie/git/abamectin_manuscript/")
-###############################
+setwd(glue::glue("{dirname(rstudioapi::getActiveDocumentContext()$path)}/../"))
 
 library(tidyverse)
 library(linkagemapping)
@@ -118,12 +115,12 @@ finemap <- variants_chrV %>%
     geom_rect(data = gwaspeaks, aes(xmin = startPOS/1e6, xmax = endPOS/1e6, ymin = -Inf, ymax = Inf), fill = "palevioletred1", alpha = 0.3, inherit.aes = F) +
     geom_rect(data = lm_peaks, aes(xmin = ci_l_pos/1e6, xmax = ci_r_pos/1e6, ymin = -Inf, ymax = Inf), fill = "skyblue", alpha = 0.3, inherit.aes = F) +
     # show QTL VL, VC, and VR
-    geom_segment(aes(x = 1.757246, xend = 4.333001, y = 8, yend = 8), color = "black", size = 1) +
-    geom_segment(aes(x = 6.118360, xend = 7.342129, y = 8, yend = 8), color = "black", size = 1) +
-    geom_segment(aes(x = 15.983112, xend = 16.599066, y = 8, yend = 8), color = "black", size = 1) +
-    geom_text(aes(x = 3.045124, y = 8.5), label = "VL", color = "black", fontface = "bold") +
-    geom_text(aes(x = 6.730244, y = 8.5), label = "VC", color = "black", fontface = "bold") +
-    geom_text(aes(x = 16.29109, y = 8.5), label = "VR", color = "black", fontface = "bold") +
+    geom_segment(aes(x = 1.757246, xend = 4.333001, y = 5, yend = 5), color = "black", size = 1) +
+    geom_segment(aes(x = 6.118360, xend = 7.342129, y = 5, yend = 5), color = "black", size = 1) +
+    geom_segment(aes(x = 15.983112, xend = 16.599066, y = 5, yend = 5), color = "black", size = 1) +
+    geom_text(aes(x = 3.045124, y = 5.5), label = "VL", color = "black", fontface = "bold") +
+    geom_text(aes(x = 6.730244, y = 5.5), label = "VC", color = "black", fontface = "bold") +
+    geom_text(aes(x = 16.29109, y = 5.5), label = "VR", color = "black", fontface = "bold") +
     labs(x = "Genomic position (Mb)", y = expression(-log[10](italic(p)))) +
     theme(axis.text = element_text(color = "black", face = "bold"),
           axis.title = element_text(color = "black", face = "bold"),
