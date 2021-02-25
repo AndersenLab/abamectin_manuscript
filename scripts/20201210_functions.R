@@ -202,7 +202,7 @@ plot_nil <- function(phenodf, genodf, statdf, strains, chr, tsize = 12, ylab = "
                   panel.grid.major = element_blank()) +
             coord_flip() +
             labs(x = " ", y = ylab)  +
-            facet_grid(condition)
+            facet_grid(~condition)
     }
 
     

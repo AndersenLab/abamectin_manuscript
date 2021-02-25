@@ -132,7 +132,7 @@ finemap <- variants_chrV %>%
     facet_grid(~CHROM, scales = "free", space = "free")
 
 cowplot::plot_grid(gwas_map, lod, finemap, nrow = 3, labels = c("A", "B", "C"), rel_heights = c(1, 1, 1.5))
-ggsave("figures/Fig1_QTLmaps.png", width = 7.5, height = 8)
+ggsave("figures/Fig1_QTLmaps.tiff", width = 7, height = 7.5)
 
 #####################################
 #       Fig 2 - NILpheno            #
@@ -200,7 +200,7 @@ cowplot::plot_grid(plots[[1]] +
                    nrow = 1, ncol = 3, rel_widths = c(3, 1, 4.5), align = "h", axis = "b", labels = c("A", "", "B"))
 
 # save
-ggsave("figures/Fig2_nilpheno.png", width = 7.5, height = 4)
+ggsave("figures/Fig2_nilpheno.tiff", width = 7.5, height = 4)
 
 #####################################
 #       Fig 3 - grace NIL           #
@@ -253,7 +253,7 @@ cowplot::plot_grid(plots[[1]] +
                    nrow = 1, ncol = 3, rel_widths = c(3, 1, 4.5), align = "h", axis = "b", labels = c("A", "", "B"))
 
 # save
-ggsave("figures/Fig3_VCNIL.png", height = 4, width = 7.5)
+ggsave("figures/Fig3_VCNIL.tiff", height = 4, width = 7.5)
 
 
 #####################################
@@ -465,7 +465,7 @@ dmsoplot <- cowplot::plot_grid(chrVgeno, genome_plot, pheno, nrow = 1, align = "
 
 cowplot::plot_grid(abaplot, dmsoplot, nrow = 2, align = "v", axis = "l", labels = c("A", "B"))
 
-ggsave("figures/Fig4_lgc54.png", height = 6, width = 7.5)
+ggsave("figures/Fig4_lgc54.tiff", height = 6, width = 7.5)
 
 
 #####################################
@@ -566,5 +566,5 @@ ggplot() +
     geom_text(aes(y = 11, x = 20e6+difference), label = "20", size = 3) +
     labs(x = "Genomic position (Mb)")
 
-ggsave("figures/Fig5_hc_overlap.png", height = 3.5, width = 7.5)
+ggsave("figures/Fig5_hc_overlap.tiff", height = 3.5, width = 7.5)
 
